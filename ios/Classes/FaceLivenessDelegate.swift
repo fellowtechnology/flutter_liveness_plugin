@@ -1,7 +1,7 @@
 import UIKit
 
 // TODO: Implement your own Delegate here
-class FaceLivenessDelegate: YourSDKDelegate {
+class FaceLivenessDelegate {
     private let onSuccess: (UIImage, String) -> Void
     private let onUpdate: (Int) -> Void
     private let onError: (String) -> Void
@@ -16,17 +16,17 @@ class FaceLivenessDelegate: YourSDKDelegate {
         self.onError = onError
     }
     
-    func onDetectOver(resultCode: LivenessKBTG.ResultCode, image: UIImage?, scores: String) {
-        if resultCode == .OK {
-            if let image = image {
-                onSuccess(image, scores)
-            } else {
-                onError("STID_E_NO_IMAGE")
-            }
-        } else {
-            onError(String(describing: resultCode))
-        }
-    }
+    // func onDetectOver(resultCode: LivenessKBTG.ResultCode, image: UIImage?, scores: String) {
+    //     if resultCode == .OK {
+    //         if let image = image {
+    //             onSuccess(image, scores)
+    //         } else {
+    //             onError("STID_E_NO_IMAGE")
+    //         }
+    //     } else {
+    //         onError(String(describing: resultCode))
+    //     }
+    // }
     
     func onStatusUpdate(livenessState: LivenessKBTG.LivenessState) {
         let state: Int
