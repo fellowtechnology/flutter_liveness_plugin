@@ -1,5 +1,6 @@
 import AVFoundation
 import Flutter
+import OSLog
 
 class FaceLivenessDetection: NSObject, FlutterTexture {
     /// Capture session of the camera
@@ -37,6 +38,10 @@ class FaceLivenessDetection: NSObject, FlutterTexture {
     private var isAlreadySetup = false
     
     private var isStarted = false
+
+    private var livenessModel: LivenessModel?;
+
+    private var delegate: FaceLivenessDelegate?;
         
     init(
         registry: FlutterTextureRegistry?,
@@ -49,6 +54,7 @@ class FaceLivenessDetection: NSObject, FlutterTexture {
         self.statusUpdateCallback = statusUpdateCallback
         self.errorCallback = errorCallback
         super.init()
+        Logger.livenessLog.info("[LIVENESS] init...");
     }
     
     func setScanWindow(_ scanWindow: [CGFloat]?) {
@@ -207,8 +213,16 @@ extension FaceLivenessDetection: AVCaptureVideoDataOutputSampleBufferDelegate {
     
     private func setUpLivenessSDK(_ rectCamera: CGRect, _ rectMask: CGRect) {
         // TODO: Add initial setup for your ML here
-        
         isAlreadySetup = true
+        Logger.livenessLog.info("[LIVENESS] Set up liveness SDK: \(self.isAlreadySetup, privacy: .public)");
+        
+        let delegate = FaceLivenessDelegate(
+            onSuccess: self.callback,
+            onUpdate: { _ in },
+            onError: { _ in }
+        ); 
+        self.delegate  = delegate;
+        self.livenessModel = LivenessModel(faceLivenessDelegate: delegate);
     }
     
     private func getCenterRect(_ inputImage: UIImage) -> CGRect {
@@ -282,6 +296,10 @@ extension FaceLivenessDetection: AVCaptureVideoDataOutputSampleBufferDelegate {
                 self.isStarted = true
             } else if self.isReadyToProcess() {
                 // TODO: Add your ML processing here
+                Logger.livenessLog.info("[LIVENESS] Ready to process...");
+                if let livenessModel = self.livenessModel {
+                    livenessModel.receive(image: image);
+                }
             }
             
             self.isProcessing = false

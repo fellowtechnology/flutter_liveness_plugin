@@ -1,5 +1,6 @@
 import Foundation
 import Flutter
+import OSLog
 
 class FaceLivenessHandler: NSObject, FlutterStreamHandler {
     var event: [String: Any?] = [:]
@@ -28,4 +29,9 @@ class FaceLivenessHandler: NSObject, FlutterStreamHandler {
         eventSink = nil
         return nil
     }
+}
+
+extension Logger {
+    private static var subsystem = Bundle.main.bundleIdentifier!
+    static let livenessLog = Logger(subsystem: subsystem, category: "livenessLog")
 }
