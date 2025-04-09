@@ -41,7 +41,7 @@ class FaceLivenessDetection(
     private var preview: Preview? = null
     private var textureEntry: TextureRegistry.SurfaceTextureEntry? = null
     private var displayListener: DisplayManager.DisplayListener? = null
-    private var liveness: SilentLivenessApi? = null
+    // private var liveness: SilentLivenessApi? = null
 
     /// Configurable variables
     private var scanWindow: List<Float>? = null
@@ -50,6 +50,10 @@ class FaceLivenessDetection(
     private var timeout = 40000
     private var isAlreadySetup = false
     private var isStarted = false
+
+
+    private var livenessModel: FaceLivenessModel? = null;
+    
 
     fun setScanWindow(scanWindow: List<Float>) {
         this.scanWindow = scanWindow
@@ -238,8 +242,10 @@ class FaceLivenessDetection(
         rectMask: Rect,
     ) {
         // TODO: Add initial setup for your ML here
-
         isAlreadySetup = true;
+
+        var listener = FaceLivenessListener(callback, statusUpdateCallback, errorCallback);
+        this.livenessModel = FaceLivenessModel(listener);
     }
 
     private fun getCenterRect(inputImage: ImageProxy): Rect {
@@ -295,6 +301,7 @@ class FaceLivenessDetection(
                         isStarted = true
                     } else if (isReadyToProcess()) {
                         // TODO: Add your ML processing here
+                        livenessModel?.receive(imageByteArray);
                     }
                 }
                 imageProxy.close()

@@ -1,14 +1,13 @@
 package com.kbtg.face_liveness_detection
 
 import android.graphics.Bitmap
-import com.kbtg.liveness.OnLivenessListener
 import android.graphics.BitmapFactory
 
 class FaceLivenessListener(
     private val onSuccess: FaceLivenessDetectionCallback,
     private val onUpdate: FaceLivenessDetectionStatusUpdateCallback,
     private val onError: FaceLivenessDetectionErrorCallback
-) : YourSDKDelegate {
+) {
 
     private fun mapResultIntToString(input: Int): String {
         return when (input) {
@@ -28,16 +27,17 @@ class FaceLivenessListener(
         }
     }
 
-    override fun onDetectOver(resultCode: Int, image: ByteArray, scores: String) {
-        if (resultCode == 0) {
-            val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
-            onSuccess(bitmap, scores)
-        } else {
-            onError(mapResultIntToString(resultCode))
-        }
+    fun onDetectOver(image: ByteArray, scores: String) {
+        val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
+        onSuccess(bitmap, scores)
+        // if (resultCode == 0) {
+            
+        // } else {
+        //     onError(mapResultIntToString(resultCode))
+        // }
     }
 
-    override fun onStatusUpdate(livenessState: Int) {
+    fun onStatusUpdate(livenessState: Int) {
         onUpdate(livenessState)
     }
 }
